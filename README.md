@@ -375,6 +375,95 @@ $$
 $$
 
 
+## 5. Логическая схема базы данных    
+
+
+[![Логическая схема базы данных](https://github.com/user-attachments/assets/cce2625d-d0e6-45a5-b035-a5fa25baf5e8)](https://mermaid.live/view#pako:eNqtVttu4jAQ_ZXIUt9oBYVCyRuXtJtdARUJaFUhRSYewGoSI8eBdin_vg6BkGuXrchTkhmPz5w5M_YO2YwAUhHwPsVLjt2Zp8hnYmhjZRe9H74nel-hRHn5df437Yx7PzpjJfCBe9iFvGWNfX_LOMlbwMXUOf_WhpOB4gssAj_vizdYYG4FPLGgqz_rQ1NZMMdhW-B-iYV6y7PF1H6bypyyTFbgzoEQ6WnJ_J6O-e1nXvQy1fvaKMfEhhJgVoaPgyUkIxkomYigwoEMHgK-zelaUOblF0TbpBKPY60Cd-5JEtNmUx9ohtkZvJivSrB2GCYWwQIyINeYgyesUxaZOoiPNeT43FDY-pbNAk_kbA59gzKbzVxX7pUzX0B9qEHL0AxDHw1zFfDB9yVnVokmBXsD74LSJPmyOUiqiIVFGZ_kSzu8rymXRJzscSK90WCgSS6yORy5uVhHaeml0gilJOBdXJ5ZUggnCaRVb421Ts8sIj_CIIPaoqAG38BfoLuv8GeZLUd6ovh7WBMFugZaY9I1emP9pRCpH8zjSVCI8ugwL8O6wp4Hzv8IPAb21JmOJmPd1HKoFnjDAk4FXEOkCSiYkCIg2rSoT2BznS75R90EdUGeQe46E4vDAmSb2JAaldkplNzopzEaduVoF3I--9kUB12t39eHz9ZAMzv5XJMjsWiyufK8dqz0eRsO2uj_Rp6F6aNE65kjeZKALRi_ztyLU7m5Ucbg4FCxfuLa8Pl5e8t2x5NTPR5DBQ6p-a4qK1zgcxqdqrINVVi2zXkAqMqh1ctDXeKaalT13HkFrufWUc_NUuAXKVtVBKfLZXxhiTjK5RpTkbLnMi12SyKiXoHDCQoPawekUJaJEoUl9GX55x9fecbVPrmiClpySpC6wI4PFeQCl3c--Y0Okp8hsQKpYaTKVwILHDhihmbeXq5bY--VMRepggdyJWfBchXHidR4vKzGLuAR4L3wioHUWqPaOARB6g69y-9W667VqjXv2-1Gs9auNu4r6AOprfpd66HWrjXr7Ub1sd2831fQn8O2tbvqQ6Peemw22s16_aEpowGhsn8G0V35cGXe_wU0ajut)
+
+
+Картинка кликабельна.
+
+
+### Объем базы данных
+
+
+
+1. **users**: Количество зарегистрированных пользователей [^2]  
+2. **videos**: Количество загруженных роликов (7)  
+3. **user_session**: Количество уникальных пользоватей месяца MAU [^4]  
+4. **comment**: $\text{Количество роликов (7)} \times \text{Среднее количество комментариев под роликом (3)} = 76.7B \times 225 \approx 1.31\times10^{15}$  
+5. **video_reaction**: $\text{Среднее количество просмотров [12]} \times \text{Количество роликов (7)} \times{Частота комментариев [10]} = 32108 \times 76.7B \times 0.034 \approx 6.36\times10^{15}$  
+6. **comment_reaction**: Данные не найдены. Для упрощения взяты те же цифры что и video_reaction
+7. **subscription**: $\text{Среднее количество просмотров [12]} \times \text{Количество роликов (7)} \times{Частота подписок [10]} = 32108 \times 76.7B \times 0.001 \approx 0.19\times10^{15}$  
+8. **favourite**: $\text{Среднее количество просмотров [12]} \times \text{Количество роликов (7)} \times{Частота добавлений в избранное [10]} = 32108 \times 76.7B \times 0.0056 \approx 1.05\times10^{15}$
+9. **event**: $\text{Сумма всех действий пользователя в день} \times \text{DAU} = 80.68 \times 875.736M \approx 70.655\times10^{9}$  
+10. **embedding_meta**: $\text{Сумма всех пользователей} + \text{Сумма всех роликов} = 2.249B \times 76.7 \approx 78.949\times10^{9}$  
+
+
+|      Таблица     | Объем одной записи | Количество записей   | Общий объем      | Расчет |
+|------------------|--------------------|----------------------|------------------|--------|
+| users            | 1931 Byte          | $2.249\times10^{9}$  |  4.342819 TB     | id(16) + username(64) + password(60) + email(255) + status(4) + avatar_url(500) + followers(8) + following(8) + bio(1000) + embedding_id(16) |
+| videos           | 1620 Byte          | $76.7\times10^{9}$   |  0.124254 PB     | video_id(16) + user_id(16) + title(120) + description(1000) + video_url(200) + thumbnail_url(200) + upload_date(8) + parent_video_id(16) + type(4) + views_count(8) + likes_count(8) + comments_count(8) + embedding_id(16) |
+| user_session     | 184 Byte           | $1.582\times10^{9}$  |  0.291088 TB     | session_id(16) + token(128) + user_id(16) + created_at(8) + updated_at(8) + expires_at(8) |
+| comment          | 372 Byte           | $1.31\times10^{15}$  |  487.32 PB       | comment_id(16) + user_id(16) + video_id(16) + text(300) + created_at(8) + parent_id(16) |
+| video_reaction   | 60 Byte            | $6.36\times10^{15}$  |  381.6 PB        | video_reaction_id(16) + user_id(16) + video_id(16) + type(4) + created_at(8) |
+| comment_reaction | 60 Byte            | $6.36\times10^{15}$  |  381.6 PB        | comment_reaction_id(16) + user_id(16) + comment_id(16) + type(4) + created_at(8)|
+| subscription     | 56 Byte            | $0.19\times10^{15}$  |  10.64 PB        | subscription_id(16) + subscriber_id(16) + channel_id(16) + created_at(8) |
+| favourite        | 56 Byte            | $1.05\times10^{15}$  |  58.8 PB         | favourite_id(16) + user_id(16) + video_id(16) + added_at(8) |
+| event            | 392 Byte           | $70.655\times10^{9}$ |  27.697 TB       | event_id(16) + user_id(16) + video_id(16) + type(4) + timestamp(8) + reference_id(16) + session_id(16) + details(jsonb 300) |
+| embedding_meta   | 3236 Byte          | $78.949\times10^{9}$ |  255.479 TB      | embedding_id(16) + model_name(128) + model_version(4) + vector(3072) + created_at(8) + updated_at(8) |  
+
+
+### Требования к консистентности  
+
+
+1. **CONSTRAINTS:**
+
+
+|      Таблица     | PK                  | FK                                     | NOT NULL                                                                                                         | UNIQUE                      |
+|------------------|---------------------|----------------------------------------|------------------------------------------------------------------------------------------------------------------|-----------------------------|
+| users            | id                  | embedding_id                           |  id, username, password, email, status, followers, following                                                     | username, email             |
+| videos           | video_id            | user_id, parent_video_id, embedding_id |  video_id, user_id, title, video_url, thumbnail_url, upload_date, type, views_count, likes_count, comments_count |  -                          |
+| user_session     | session_id          | user_id                                |  session_id, token, user_id, created_at, expires_at                                                              | token                       |
+| comment          | comment_id          | user_id, video_id, parent_id           |  comment_id, user_id, video_id, text, created_at                                                                 | (user_id, comment_id)       |
+| video_reaction   | video_reaction_id   | user_id, video_id                      |  video_reaction_id, user_id, video_id, type, created_at                                                          | (user_id, video_id)         |
+| comment_reaction | comment_reaction_id | user_id, comment_id                    |  comment_reaction_id, user_id, comment_id, type, created_at                                                      | -                           |
+| subscription     | subscription_id     | subscriber_id, channel_id              |  subscription_id, subscriber_id, channel_id, created_at                                                          | (subscriber_id, channel_id) |
+| favourite        | favourite_id        | user_id, video_id                      |  favourite_id, user_id, video_id, added_at                                                                       | (user_id, video_id)         |
+| event            | event_id            | user_id, video_id, session_id          |  event_id, user_id, type, timestamp, session_id                                                                  |  -                          |
+| embedding_meta   | embedding_id        | -                                      |  embedding_id, model_name, model_version, vector, created_at                                                     |  -                          |  
+
+
+2. **CHECK:**
+
+
+|      Таблица     | CHECK                                                                                                                     |
+|------------------|---------------------------------------------------------------------------------------------------------------------------|
+| users            | followers >= 0; following >= 0; status IN ('active', 'banned', 'suspended')                                               |
+| videos           | type IN ('original', 'duet', 'stitch'); views_count >= 0 AND likes_count >= 0 AND comments_count >= 0                     |
+| user_session     | expires_at > created_at                                                                                                   |
+| comment          | -                                                                                                                         |
+| video_reaction   | type IN ('like', 'dislike')                                                                                               |
+| comment_reaction | type IN ('like', 'complaint')                                                                                             |
+| subscription     | subscriber_id != channel_id                                                                                               |
+| favourite        | -                                                                                                                         |
+| event            | type IN ('view', 'like', 'comment', 'share', 'subscribe', 'upload', 'dislike', 'favourite', 'unsubscribe', 'unfavourite') |
+| embedding_meta   | -                                                                                                                         |  
+
+
+3. **TRANSACTIONS:**  
+	a. Транзакция загрузки видео (обновление мета-данных, создание event)  
+	b. Транзакция обработки лайка (обновление мета-данных, создание event)  
+	c. Транзакция подписки (обновление мета-данных, создание event)  
+	d. Транзакция комментирования (обновление мета-данных, создание event)  
+
+4. **TRIGGER, PROCEDURE:**  
+	a. Триггер для автоматического обновления updated_at  
+	b. Триггер для проверки дубликатов подписки  
+	c. Процедура для удаления пользователя  
+	d. Процедура для получения рекомендаций  
+
+
 ## Список используемых источников:
 [^1]: [Основные регионы по распространенности сервиса I](https://www.statista.com/statistics/1299807/number-of-monthly-unique-tiktok-users/), [Основные регионы по распространенности сервиса II](https://www.demandsage.com/tiktok-user-statistics/)
 [^2]: [Количество зарегистрированных пользователей I](https://www.demandsage.com/tiktok-user-statistics/), [Количество зарегистрированных пользователей II](https://datareportal.com/reports/digital-2025-july-global-statshot)
