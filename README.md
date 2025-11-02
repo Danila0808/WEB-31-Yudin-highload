@@ -464,67 +464,60 @@ $$\text{RPS}_{\text{avg}} = \frac{\text{RPD}}{86400 \text{ (секунд в дн
 [![Физическая схема базы данных](https://github.com/user-attachments/assets/ee418f0b-7861-49f1-8206-73ba9486710b)](https://www.mermaidchart.com/app/projects/60c75d35-635d-4b8a-953c-11d8467d5a57/diagrams/3864e5d6-7cfe-4815-b562-8aec0301abb7/version/v0.1/edit)
 
 
-### Объемы данных       
+### Размер таблицы после денормализации       
 
 
-| Метрика / Таблица | Расчёт (bytes)                                                                                                                                                                                                                                                     | Итог (bytes) |
-| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -----------: |
-| USER              | 16 (id) + 32 (username) + 64 (password) + 64 (email) + 4 (status) + 200 (avatar_url) + 200 (bio) + 16 (embedding_id)                                                                                                                                               |      **596** |
-| USER_COUNTERS     | 16 (user_id) + 8 (followers_count) + 8 (following_count) + 8 (updated_at)                                                                                                                                                                                          |       **40** |
-| VIDEO             | 16 (video_id) + 16 (user_id) + 100 (title) + 500 (description) + 200 (video_url) + 200 (thumbnail_url) + 8 (upload_date) + 16 (parent_video_id) + 4 (type) + 32 (username) + 200 (ava_url) + 100 (parent_video_title) + 200 (parent_video_url) + 16 (embedding_id) |     **1608** |
-| VIDEO_COUNTERS    | 16 (video_id) + 8 (views_count) + 8 (likes_count) + 8 (comments_count) + 8 (favourites_count) + 8 (shares_count) + 8 (updated_at)                                                                                                                                  |       **64** |
-| USER_SESSION      | 16 (session_id) + 64 (token) + 16 (user_id) + 8 (created_at) + 8 (updated_at) + 8 (expires_at)                                                                                                                                                                     |      **120** |
-| COMMENT           | 16 (comment_id) + 16 (user_id) + 16 (video_id) + 300 (text) + 8 (created_at) + 16 (parent_id) + 32 (username) + 200 (ava_url)                                                                                                                                      |      **604** |
-| COMMENT_COUNTERS  | 16 (comment_id) + 8 (likes_count) + 8 (updated_at)                                                                                                                                                                                                                 |       **32** |
-| VIDEO_REACTION    | 16 (video_reaction_id) + 16 (user_id) + 16 (video_id) + 4 (type) + 8 (created_at)                                                                                                                                                                                  |       **60** |
-| COMMENT_REACTION  | 16 (comment_reaction_id) + 16 (user_id) + 16 (comment_id) + 4 (type) + 8 (created_at)                                                                                                                                                                              |       **60** |
-| SUBSCRIPTION      | 16 (subscription_id) + 16 (subscriber_id) + 16 (channel_id) + 8 (created_at)                                                                                                                                                                                       |       **56** |
-| FAVOURITE         | 16 (favourite_id) + 16 (user_id) + 16 (video_id) + 8 (added_at)                                                                                                                                                                                                    |       **56** |
-| EVENT             | 16 (event_id) + 16 (user_id) + 16 (video_id) + 4 (type) + 8 (timestamp) + 16 (reference_id) + 16 (session_id) + 256 (details JSONB)                                                                                                                                |      **348** |
-| EMBEDDING_META    | 16 (embedding_id) + 64 (model_name) + 4 (model_version) + 6144 (vector) + 8 (created_at) + 8 (updated_at)                                                                                                                                                          |     **6244** |
-| SEARCH_VIDEO      | 16 (search_id) + 16 (video_id) + 100 (title) + 200 (url) + 8 (likes) + 8 (upload_date) + 200 (author_ava) + 32 (author_username) + 16 (author_id) + 256 (TSVECTOR)                                                                                                 |      **852** |
-| SEARCH_USER       | 16 (search_id) + 16 (user_id) + 32 (username) + 200 (bio) + 200 (ava_url) + 8 (followers) + 256 (TSVECTOR)                                                                                                                                                         |      **728** |  
+| Метрика / Таблица    | Расчёт (bytes)                                                                                                                                                                                                                                                                                                             | Вес одной записи (bytes) |      Количество записей | Итоговый вес таблицы |
+| -------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -----------------------: | ----------------------: | -------------------: |
+| **USER**             | 16 (**id**) + 32 (**username**) + 64 (**password**) + 64 (**email**) + 4 (**status**) + 200 (**avatar_url**) + 200 (**bio**) + 16 (**embedding_id**)                                                                                                                                                                       |                  **596** |   $2.249 \times 10^{9}$ |          **1.25 TB** |
+| **USER_COUNTERS**    | 16 (**user_id**) + 8 (**followers_count**) + 8 (**following_count**) + 8 (**updated_at**)                                                                                                                                                                                                                                  |                   **40** |   $2.249 \times 10^{9}$ |            **84 GB** |
+| **VIDEO**            | 16 (**video_id**) + 16 (**user_id**) + 100 (**title**) + 500 (**description**) + 200 (**video_url**) + 200 (**thumbnail_url**) + 8 (**upload_date**) + 16 (**parent_video_id**) + 4 (**type**) + 32 (**username**) + 200 (**ava_url**) + 100 (**parent_video_title**) + 200 (**parent_video_url**) + 16 (**embedding_id**) |                 **1608** |    $76.7 \times 10^{9}$ |        **123.36 TB** |
+| **VIDEO_COUNTERS**   | 16 (**video_id**) + 8 (**views_count**) + 8 (**likes_count**) + 8 (**comments_count**) + 8 (**favourites_count**) + 8 (**shares_count**) + 8 (**updated_at**)                                                                                                                                                              |                   **64** |    $76.7 \times 10^{9}$ |          **4.91 TB** |
+| **USER_SESSION**     | 16 (**session_id**) + 64 (**token**) + 16 (**user_id**) + 8 (**created_at**) + 8 (**updated_at**) + 8 (**expires_at**)                                                                                                                                                                                                     |                  **120** |   $1.582 \times 10^{9}$ |         **177.4 GB** |
+| **COMMENT**          | 16 (**comment_id**) + 16 (**user_id**) + 16 (**video_id**) + 300 (**text**) + 8 (**created_at**) + 16 (**parent_id**) + 32 (**username**) + 200 (**ava_url**)                                                                                                                                                              |                  **604** |   $1.53 \times 10^{12}$ |         **836.5 TB** |
+| **COMMENT_COUNTERS** | 16 (**comment_id**) + 8 (**likes_count**) + 8 (**updated_at**)                                                                                                                                                                                                                                                             |                   **32** |   $1.53 \times 10^{12}$ |          **44.8 TB** |
+| **VIDEO_REACTION**   | 16 (**video_reaction_id**) + 16 (**user_id**) + 16 (**video_id**) + 4 (**type**) + 8 (**created_at**)                                                                                                                                                                                                                      |                   **60** |  $8.259 \times 10^{12}$ |         **450.2 TB** |
+| **COMMENT_REACTION** | 16 (**comment_reaction_id**) + 16 (**user_id**) + 16 (**comment_id**) + 4 (**type**) + 8 (**created_at**)                                                                                                                                                                                                                  |                   **60** |  $1.467 \times 10^{12}$ |          **88.0 TB** |
+| **SUBSCRIPTION**     | 16 (**subscription_id**) + 16 (**subscriber_id**) + 16 (**channel_id**) + 8 (**created_at**)                                                                                                                                                                                                                               |                   **56** | $218.636 \times 10^{9}$ |          **11.9 TB** |
+| **FAVOURITE**        | 16 (**favourite_id**) + 16 (**user_id**) + 16 (**video_id**) + 8 (**added_at**)                                                                                                                                                                                                                                            |                   **56** |  $1.224 \times 10^{12}$ |          **68.4 TB** |
+| **EVENT**            | 16 (**event_id**) + 16 (**user_id**) + 16 (**video_id**) + 4 (**type**) + 8 (**timestamp**) + 16 (**reference_id**) + 16 (**session_id**) + 256 (**details JSONB**)                                                                                                                                                        |                  **348** |   $2.12 \times 10^{12}$ |         **742.6 TB** |
+| **EMBEDDING_META**   | 16 (**embedding_id**) + 64 (**model_name**) + 4 (**model_version**) + 6144 (**vector**) + 8 (**created_at**) + 8 (**updated_at**)                                                                                                                                                                                          |                 **6244** |  $78.949 \times 10^{9}$ |         **462.9 TB** |
+| **SEARCH_VIDEO**     | 16 (**search_id**) + 16 (**video_id**) + 100 (**title**) + 200 (**url**) + 8 (**likes**) + 8 (**upload_date**) + 200 (**author_ava**) + 32 (**author_username**) + 16 (**author_id**) + 256 (**TSVECTOR**)                                                                                                                 |                  **852** |    $76.7 \times 10^{9}$ |          **65.3 TB** |
+| **SEARCH_USER**      | 16 (**search_id**) + 16 (**user_id**) + 32 (**username**) + 200 (**bio**) + 200 (**ava_url**) + 8 (**followers**) + 256 (**TSVECTOR**)                                                                                                                                                                                     |                  **728** |   $2.249 \times 10^{9}$ |          **1.52 TB** |
+
 
 <br><br>
 ### Индексы     
 
 
-| Сценарий | Таблица | Поля индекса (составной / одиночный) | Объём одной записи (байт) | Количество записей | Общий объём индекса |
+| Сценарий | Таблица | Поля индекса | Объём одной записи (байт) | Количество записей | Общий объём индекса |
 |---------|--------|--------------------------------------|---------------------------|---------------------|---------------------|
-| **PK: `USER.id`** | `USER` | `id` (PK) | 16 | $2.249 \times 10^{9}$ | **35.98 GB** |
-| **Уникальность пользователя** | `USER` | `username` (уникальный) | 28 | $2.249 \times 10^{9}$ | **62.97 GB** |
-| **Найти `embedding_id` у пользователя** | `USER` | `embedding_id` | 16 | $2.249 \times 10^{9}$ | **35.98 GB** |
-| **PK: `VIDEO.video_id`** | `VIDEO` | `video_id` (PK) | 16 | $76.7 \times 10^{9}$ | **1.23 TB** |
-| **Найти родительский ролик по ролику** | `VIDEO` | `parent_video_id` | 16 | $76.7 \times 10^{9}$ | **1.23 TB** |
-| **Быстрая отдача ролика (все поля для отображения)** | `VIDEO` | `video_id` (PK) → покрыто | **~360** | $76.7 \times 10^{9}$ | **27.61 TB** |
-| **Найти все ролики пользователя** | `VIDEO` | `user_id, upload_date DESC` (составной) | 24 | $76.7 \times 10^{9}$ | **1.84 TB** |
-| **PK: `COMMENT.comment_id`** | `COMMENT` | `comment_id` (PK) | 16 | $1.31 \times 10^{15}$ | **20.96 PB** |
-| **Найти все комментарии к ролику** | `COMMENT` | `video_id, created_at DESC` (составной) | 24 | $1.31 \times 10^{15}$ | **31.44 PB** |
-| **Для комментария найти родительский комментарий** | `COMMENT` | `parent_id, created_at DESC` (составной) | 24 | $1.31 \times 10^{15}$ | **31.44 PB** |
-| **Подсчёт комментариев к видео** | `COMMENT` | `video_id` | 16 | $1.31 \times 10^{15}$ | **20.96 PB** |
-| **Быстрая выдача комментария (все поля для отображения)** | `COMMENT` | `comment_id` (PK) → покрыто | **~230** | $1.31 \times 10^{15}$ | **301.30 PB** |
-| **PK: `VIDEO_REACTION`** | `VIDEO_REACTION` | `video_reaction_id` (PK) | 16 | $6.36 \times 10^{15}$ | **101.76 PB** |
-| **Уникальность лайка** | `VIDEO_REACTION` | `user_id, video_id` (составной, уникальный) | 32 | $6.36 \times 10^{15}$ | **203.52 PB** |
-| **Подсчёт лайков на видео** | `VIDEO_REACTION` | `video_id, created_at DESC` (составной) | 24 | $6.36 \times 10^{15}$ | **152.64 PB** |
-| **PK: `COMMENT_REACTION`** | `COMMENT_REACTION` | `comment_reaction_id` (PK) | 16 | $6.36 \times 10^{15}$ | **101.76 PB** |
-| **Уникальность лайка на комментарий** | `COMMENT_REACTION` | `user_id, comment_id` (составной, уникальный) | 32 | $6.36 \times 10^{15}$ | **203.52 PB** |
-| **Подсчёт лайков на комментарий** | `COMMENT_REACTION` | `comment_id, created_at DESC` (составной) | 24 | $6.36 \times 10^{15}$ | **152.64 PB** |
-| **PK: `SUBSCRIPTION`** | `SUBSCRIPTION` | `subscription_id` (PK) | 16 | $0.19 \times 10^{15}$ | **3.04 PB** |
-| **Уникальность подписки** | `SUBSCRIPTION` | `subscriber_id, channel_id` (составной, уникальный) | 32 | $0.19 \times 10^{15}$ | **6.08 PB** |
-| **Найти все подписки пользователя** | `SUBSCRIPTION` | `subscriber_id, created_at DESC` (составной) | 24 | $0.19 \times 10^{15}$ | **4.56 PB** |
-| **Найти всех подписчиков пользователя** | `SUBSCRIPTION` | `channel_id, created_at DESC` (составной) | 24 | $0.19 \times 10^{15}$ | **4.56 PB** |
-| **Подсчёт подписчиков у пользователя** | `SUBSCRIPTION` | `channel_id` | 16 | $0.19 \times 10^{15}$ | **3.04 PB** |
-| **Подсчёт подписок пользователя** | `SUBSCRIPTION` | `subscriber_id` | 16 | $0.19 \times 10^{15}$ | **3.04 PB** |
-| **PK: `FAVOURITE`** | `FAVOURITE` | `favourite_id` (PK) | 16 | $1.05 \times 10^{15}$ | **16.80 PB** |
-| **Уникальность избранного** | `FAVOURITE` | `user_id, video_id` (составной, уникальный) | 32 | $1.05 \times 10^{15}$ | **33.60 PB** |
-| **Найти все избранные ролики пользователя** | `FAVOURITE` | `user_id, added_at DESC` (составной) | 24 | $1.05 \times 10^{15}$ | **25.20 PB** |
-| **Подсчёт избранных у видео** | `FAVOURITE` | `video_id` | 16 | $1.05 \times 10^{15}$ | **16.80 PB** |
-| **PK: `EMBEDDING_META`** | `EMBEDDING_META` | `embedding_id` (PK) | 16 | $78.949 \times 10^{9}$ | **1.26 TB** |
-| **Быстрая выдача поиска ролика / избранного ролика** | `VIDEO` + `VIDEO_COUNTERS` | `video_id` → `LEFT JOIN` по PK | **~410** | $76.7 \times 10^{9}$ | **31.45 TB** |
-| **Быстрая выдача поиска пользователя / подписчика / подписки** | `USER` + `USER_COUNTERS` | `id` → `LEFT JOIN` по PK | **~232** | $2.249 \times 10^{9}$ | **0.52 TB** |
-| **`USER_COUNTERS`** | `USER_COUNTERS` | `user_id` (PK) | 16 | $2.249 \times 10^{9}$ | **35.98 GB** |
-| **`VIDEO_COUNTERS`** | `VIDEO_COUNTERS` | `video_id` (PK) | 16 | $76.7 \times 10^{9}$ | **1.23 TB** |
-| **`COMMENT_COUNTERS`** | `COMMENT_COUNTERS` | `comment_id` (PK) | 16 | $1.31 \times 10^{15}$ | **20.96 PB** |
+| **Поиск пользователя по user_id** | `USER` | `id` | 16 | $2.249 \times 10^{9}$ | **33.513 GB** |
+| **Поиск пользователя по никнейму** | `USER` | `username` | 32 | $2.249 \times 10^{9}$ | **67.02 GB** |
+| **Поиск пользователя по почте** | `USER` | `email` | 64 | $2.249 \times 10^{9}$ | **134.05 GB** |
+| **Поиск счетчиков по user_id** | `USER_COUNTERS` | `user_id` | 16 | $2.249 \times 10^{9}$ | **33.513 GB** |
+| **Найти видеокролик по video_id** | `VIDEO` | `video_id` | 16 | $76.7 \times 10^{9}$ | **1.12 TB** |
+| **Найти родительский ролик (Duet/Stitch)** | `VIDEO` | `parent_video_id` | 16 | $76.7 \times 10^{9}$ | **1.12 TB** |
+| **Найти все ролики пользователя** | `VIDEO` | `user_id, upload_date DESC` | 24 | $76.7 \times 10^{9}$ | **1.68 TB** |
+| **Поиск счетчиков по video_id** | `VIDEO_COUNTERS` | `video_id` | 16 | $76.7 \times 10^{9}$ | **1.12 TB** |
+| **Поиск комментария по comment_id** | `COMMENT` | `comment_id` | 16 | $1.53 \times 10^{12}$ | **22.27 TB** |
+| **Найти все комментарии к ролику** | `COMMENT` | `video_id, created_at DESC` | 24 | $1.53 \times 10^{12}$ | **33.4 TB** |
+| **Найти все ответы на комментарий** | `COMMENT` | `parent_id, created_at DESC` | 24 | $1.53 \times 10^{12}$ | **33.4 TB** |
+| **Поиск счетчика лайков для комментария** | `COMMENT_COUNTERS` | `comment_id` | 16 | $1.53 \times 10^{12}$ | **22.27 TB** |
+| **Уникальность лайка на ролик** | `VIDEO_REACTION` | `user_id, video_id (UNIQUE)` | 32 | $8.259 \times 10^{12}$ | **240.4 TB** |
+| **Уникальность лайка на комментарий** | `COMMENT_REACTION` | `user_id, comment_id (UNIQUE)` | 32 | $1.467 \times 10^{12}$ | **42.7 TB** |
+| **Подсчёт лайков на комментарий** | `COMMENT_REACTION` | `comment_id` | 16 | $1.467 \times 10^{12}$ | **23.47 TB** |
+| **Уникальность подписки** | `SUBSCRIPTION` | `subscriber_id, channel_id (UNIQUE)` | 32 | $218.636 \times 10^{9}$ | **6.36 TB** |
+| **Найти все подписки пользователя** | `SUBSCRIPTION` | `subscriber_id, created_at DESC` | 24 | $218.636 \times 10^{9}$ | **4.77 TB** |
+| **Найти всех подписчиков пользователя** | `SUBSCRIPTION` | `channel_id, created_at DESC` | 24 | $218.636 \times 10^{9}$ | **4.77 TB** |
+| **Уникальность избранного** | `FAVOURITE` | `user_id, video_id` | 32 | $1.224 \times 10^{12}$ | **35.63 TB** |
+| **Найти все избранные ролики пользователя** | `FAVOURITE` | `user_id, added_at DESC` | 24 | $1.224 \times 10^{12}$ | **26.72 TB** |
+| **Найти пользователя по токену** | `USER_SESSION` | `token` | 64 | $1.582 \times 10^{9}$ | **94.29 GB** |
+| **Найти все сессии пользователя** | `USER_SESSION` | `user_id, expires_at` | 24 | $1.582 \times 10^{9}$ | **35.36 GB** |
+| **Найти все действия пользователя** | `EVENT` | `user_id, timestamp` | 24 | $2.12 \times 10^{12}$ | **42.268 TB** |
+| **Найти все события под роликом** | `EVENT` | `video_id, timestamp` | 24 | $2.12 \times 10^{12}$ | **42.268 TB** |
+| **Найти мета-данные** | `EMBEDDING_META` | `embedding_id` | 16 | $78.949 \times 10^{9}$ | **1.15 TB** |
+
 
 <br><br>
 ### Шардирование/Партиционирование    
@@ -532,19 +525,19 @@ $$\text{RPS}_{\text{avg}} = \frac{\text{RPD}}{86400 \text{ (секунд в дн
 
 | Таблица | Стратегия | Поля |
 |--------|----------|----------------|
-| `USER` | **Шардирование** | `id` (UUID → hash) |
-| `USER_COUNTERS` | **Шардирование** | `user_id` (с тем же шардом, что и `USER`) |
-| `VIDEO` | **Шардирование** | `user_id` (владелец) |
-| `VIDEO_COUNTERS` | **Шардирование** | `video_id` → тот же шард, что и `VIDEO` |
-| `USER_SESSION` | **Шардирование** | `user_id` |
-| `COMMENT` | **Партиционирование + Шардирование** | **Партиционирование**: `created_at` (по месяцам)<br>**Шардирование**: `video_id` → шард видео |
-| `COMMENT_COUNTERS` | **Шардирование** | `comment_id` → тот же шард, что и `COMMENT` |
-| `VIDEO_REACTION` | **Партиционирование + Шардирование** | **Партиционирование**: `created_at` (по неделям/месяцам)<br>**Шардирование**: `video_id` |
-| `COMMENT_REACTION` | **Партиционирование + Шардирование** | **Партиционирование**: `created_at` (по месяцам)<br>**Шардирование**: `comment_id` → шард комментария |
-| `SUBSCRIPTION` | **Шардирование** | `subscriber_id` или `channel_id` (по нагрузке) |
-| `FAVOURITE` | **Шардирование** | `user_id` |
-| `EVENT` | **Партиционирование** | `type` + `timestamp` (по дню/неделе) |
-| `EMBEDDING_META` | **Шардирование** | `embedding_id` (UUID → hash) |
+| `USER` | **Шардирование** | `id` |
+| `USER_COUNTERS` | **Шардирование** | `user_id` - тот же шард, что и `USER` |
+| `VIDEO` | **Партиционирование + Шардирование** | **Партиционирование**: `created_at` (по месяцам)<br>**Шардирование**: `user_id` |
+| `VIDEO_COUNTERS` | **Шардирование** | `video_id` - тот же шард, что и `VIDEO` |
+| `USER_SESSION` | **Шардирование** | `user_id` - тот же шард, что и `USER` |
+| `COMMENT` | **Партиционирование + Шардирование** | **Партиционирование**: `created_at` (по месяцам)<br>**Шардирование**: `video_id` - тот же шард, что и `VIDEO` |
+| `COMMENT_COUNTERS` | **Шардирование** | `comment_id` - тот же шард, что и `COMMENT` |
+| `VIDEO_REACTION` | **Партиционирование + Шардирование** | **Партиционирование**: `created_at` (по месяцам)<br>**Шардирование**: `video_id` - тот же шард, что и `VIDEO` |
+| `COMMENT_REACTION` | **Партиционирование + Шардирование** | **Партиционирование**: `created_at` (по месяцам)<br>**Шардирование**: `comment_id` - тот же шард, что и `COMMENT` |
+| `SUBSCRIPTION` | **Шардирование** | `channel_id` - тот же шард, что и `USER` |
+| `FAVOURITE` | **Шардирование** | `user_id` - тот же шард, что и `USER` |
+| `EVENT` | **Партиционирование + Шардирование** | **Партиционирование**: `timestamp` (по часам)<br>**Шардирование**: `video_id` - шард видео |
+| `EMBEDDING_META` | **Шардирование** | `embedding_id` |
 
 
 <br><br>
