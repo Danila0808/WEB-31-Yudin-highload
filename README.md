@@ -520,6 +520,32 @@ $$\text{RPS}_{\text{avg}} = \frac{\text{RPD}}{86400 \text{ (секунд в дн
 
 
 <br><br>
+### Потенциальная нагрузка  
+
+
+| Таблица                | Read<br>QPS | Write<br>QPS | Объем индекса<br>Через 10 лет |
+|------------------------|-------------|--------------|-------------------------------|
+| **`USER`**             | ?           |    ?         | 596.4575 GB                   |
+| **`USER_COUNTERS`**    | ?           |    771       | 83.78 GB                      | 
+| **`VIDEO`**            | 1.540.648   |    534       | 9.8 TB                        |
+| **`VIDEO_COUNTERS`**   | 1.540.648   |    73.342    | 2.8 TB                        |
+| **`COMMENT`**          | 97.304      |    10.786    | 222.675 TB                    |
+| **`COMMENT_COUNTERS`** | 97.304      |    3.309     | 55.675 TB                     |
+| **`USER_SESSION`**     | 10.135      |    56        | 324.125 GB                    |
+| **`VIDEO_REACTION`**   | ~           |    52.386    | **601 TB**                    |
+| **`COMMENT_REACTION`** | ~           |    3.309     | 165.425 TB                    |
+| **`SUBSCRIPTION`**     | ~           |    1.542     | 39.75 TB                      |
+| **`FAVOURITE`**        | ~           |    8.628     | 155.875 TB                    |
+| **`EVENT`**            | ~           |    ~         | 211.34 TB                     |
+| **`SEARCH_VIDEO`**     | 14.800      |    534       | -                             |
+| **`SEARCH_USER`**      | 14.800      |    56        | -                             |
+| **`EMBEDDING_META`**   | ~           |    ~         | 2.875 TB                      |  
+
+Количество шардов: 8192 шардов
+Количество реплик: RF = 3
+
+
+<br><br>
 ### Шардирование/Партиционирование    
 
 
@@ -534,8 +560,8 @@ $$\text{RPS}_{\text{avg}} = \frac{\text{RPD}}{86400 \text{ (секунд в дн
 | `COMMENT_COUNTERS` | **Шардирование** | `comment_id` - тот же шард, что и `COMMENT` |
 | `VIDEO_REACTION` | **Партиционирование + Шардирование** | **Партиционирование**: `created_at` (по месяцам)<br>**Шардирование**: `video_id` - тот же шард, что и `VIDEO` |
 | `COMMENT_REACTION` | **Партиционирование + Шардирование** | **Партиционирование**: `created_at` (по месяцам)<br>**Шардирование**: `comment_id` - тот же шард, что и `COMMENT` |
-| `SUBSCRIPTION` | **Шардирование** | `channel_id` - тот же шард, что и `USER` |
-| `FAVOURITE` | **Шардирование** | `user_id` - тот же шард, что и `USER` |
+| `SUBSCRIPTION` | **Шардирование** | `channel_id` |
+| `FAVOURITE` | **Шардирование** | `user_id` |
 | `EVENT` | **Партиционирование + Шардирование** | **Партиционирование**: `timestamp` (по часам)<br>**Шардирование**: `video_id` - шард видео |
 | `EMBEDDING_META` | **Шардирование** | `embedding_id` |
 
@@ -560,7 +586,7 @@ $$\text{RPS}_{\text{avg}} = \frac{\text{RPD}}{86400 \text{ (секунд в дн
 | **`EVENT`** | **ClickHouse** |
 | **`SEARCH_VIDEO`** | **Elasticsearch** |
 | **`SEARCH_USER`** | **Elasticsearch** |
-| **`EMBEDDING_META`** | **Melvus** | 
+| **`EMBEDDING_META`** | **Milvus** | 
 
 
 <img width="1162" height="783" alt="image" src="https://github.com/user-attachments/assets/85439d7b-0ac1-4303-ab11-86481da5c876" />
