@@ -501,19 +501,25 @@ $$\text{RPS}_{\text{avg}} = \frac{\text{RPD}}{86400 \text{ (секунд в дн
 | **Найти все ролики пользователя** | `VIDEO` | `user_id, upload_date DESC` | 24 | $76.7 \times 10^{9}$ | **1.68 TB** |
 | **Поиск счетчиков по video_id** | `VIDEO_COUNTERS` | `video_id` | 16 | $76.7 \times 10^{9}$ | **1.12 TB** |
 | **Поиск комментария по comment_id** | `COMMENT` | `comment_id` | 16 | $1.53 \times 10^{12}$ | **22.27 TB** |
-| **Найти все комментарии к ролику** | `COMMENT` | `video_id, created_at DESC` | 24 | $1.53 \times 10^{12}$ | **33.4 TB** |
+| **Найти все комментарии к ролику** | `COMMENT` | `video_id, parent_id, created_at DESC` | 40 | $1.53 \times 10^{12}$ | **55.66 TB** |
 | **Найти все ответы на комментарий** | `COMMENT` | `parent_id, created_at DESC` | 24 | $1.53 \times 10^{12}$ | **33.4 TB** |
 | **Поиск счетчика лайков для комментария** | `COMMENT_COUNTERS` | `comment_id` | 16 | $1.53 \times 10^{12}$ | **22.27 TB** |
+| **Поиск по PK лайка видео** | `VIDEO_REACTION` | `video_reaction_id` | 16 | $8.259 \times 10^{12}$ | **120.2 TB** |
 | **Уникальность лайка на ролик** | `VIDEO_REACTION` | `user_id, video_id (UNIQUE)` | 32 | $8.259 \times 10^{12}$ | **240.4 TB** |
+| **Поиск по PK лайка комментария** | `COMMENT_REACTION` | `comment_reaction_id` | 16 | $1.467 \times 10^{12}$ | **21.35 TB** |
 | **Уникальность лайка на комментарий** | `COMMENT_REACTION` | `user_id, comment_id (UNIQUE)` | 32 | $1.467 \times 10^{12}$ | **42.7 TB** |
 | **Подсчёт лайков на комментарий** | `COMMENT_REACTION` | `comment_id` | 16 | $1.467 \times 10^{12}$ | **23.47 TB** |
+| **Поиск по PK подписки** | `SUBSCRIPTION` | `subscribtion_id` | 16 | $218.636 \times 10^{9}$ | **3.18 TB** |
 | **Уникальность подписки** | `SUBSCRIPTION` | `subscriber_id, channel_id (UNIQUE)` | 32 | $218.636 \times 10^{9}$ | **6.36 TB** |
 | **Найти все подписки пользователя** | `SUBSCRIPTION` | `subscriber_id, created_at DESC` | 24 | $218.636 \times 10^{9}$ | **4.77 TB** |
 | **Найти всех подписчиков пользователя** | `SUBSCRIPTION` | `channel_id, created_at DESC` | 24 | $218.636 \times 10^{9}$ | **4.77 TB** |
+| **Поиск по PK избранного** | `FAVOURITE` | `user_id, video_id` | 16 | $1.224 \times 10^{12}$ | **17.815 TB** |
 | **Уникальность избранного** | `FAVOURITE` | `user_id, video_id` | 32 | $1.224 \times 10^{12}$ | **35.63 TB** |
 | **Найти все избранные ролики пользователя** | `FAVOURITE` | `user_id, added_at DESC` | 24 | $1.224 \times 10^{12}$ | **26.72 TB** |
+| **Поиск по PK сессии** | `USER_SESSION` | `session_id` | 16 | $1.582 \times 10^{9}$ | **23.57 GB** |
 | **Найти пользователя по токену** | `USER_SESSION` | `token` | 64 | $1.582 \times 10^{9}$ | **94.29 GB** |
 | **Найти все сессии пользователя** | `USER_SESSION` | `user_id, expires_at` | 24 | $1.582 \times 10^{9}$ | **35.36 GB** |
+| **Поиск по PK события** | `EVENT` | `event_id` | 16 | $2.12 \times 10^{12}$ | **28.18 TB** |
 | **Найти все действия пользователя** | `EVENT` | `user_id, timestamp` | 24 | $2.12 \times 10^{12}$ | **42.268 TB** |
 | **Найти все события под роликом** | `EVENT` | `video_id, timestamp` | 24 | $2.12 \times 10^{12}$ | **42.268 TB** |
 | **Найти мета-данные** | `EMBEDDING_META` | `embedding_id` | 16 | $78.949 \times 10^{9}$ | **1.15 TB** |
@@ -529,19 +535,19 @@ $$\text{RPS}_{\text{avg}} = \frac{\text{RPD}}{86400 \text{ (секунд в дн
 | **`USER_COUNTERS`**    | ?           |    771       | 83.78 GB                      | 
 | **`VIDEO`**            | 1.540.648   |    534       | 9.8 TB                        |
 | **`VIDEO_COUNTERS`**   | 1.540.648   |    73.342    | 2.8 TB                        |
-| **`COMMENT`**          | 97.304      |    10.786    | 222.675 TB                    |
+| **`COMMENT`**          | 97.304      |    10.786    | 278.325 TB                    |
 | **`COMMENT_COUNTERS`** | 97.304      |    3.309     | 55.675 TB                     |
-| **`USER_SESSION`**     | 10.135      |    56        | 324.125 GB                    |
-| **`VIDEO_REACTION`**   | ~           |    52.386    | **601 TB**                    |
-| **`COMMENT_REACTION`** | ~           |    3.309     | 165.425 TB                    |
-| **`SUBSCRIPTION`**     | ~           |    1.542     | 39.75 TB                      |
-| **`FAVOURITE`**        | ~           |    8.628     | 155.875 TB                    |
-| **`EVENT`**            | ~           |    ~         | 211.34 TB                     |
+| **`USER_SESSION`**     | 10.135      |    56        | 373.99 GB                     |
+| **`VIDEO_REACTION`**   | ~           |    52.386    | **901 TB**                    |
+| **`COMMENT_REACTION`** | ~           |    3.309     | 220.56 TB                     |
+| **`SUBSCRIPTION`**     | ~           |    1.542     | 48.27 TB                      |
+| **`FAVOURITE`**        | ~           |    8.628     | 175.98 TB                     |
+| **`EVENT`**            | ~           |    ~         | 264.175 TB                    |
 | **`SEARCH_VIDEO`**     | 14.800      |    534       | -                             |
 | **`SEARCH_USER`**      | 14.800      |    56        | -                             |
 | **`EMBEDDING_META`**   | ~           |    ~         | 2.875 TB                      |  
 
-Количество шардов: 8192 шардов
+Количество шардов: 8192 шардов<br>
 Количество реплик: RF = 3
 
 
@@ -553,16 +559,16 @@ $$\text{RPS}_{\text{avg}} = \frac{\text{RPD}}{86400 \text{ (секунд в дн
 |--------|----------|----------------|
 | `USER` | **Шардирование** | `id` |
 | `USER_COUNTERS` | **Шардирование** | `user_id` - тот же шард, что и `USER` |
-| `VIDEO` | **Партиционирование + Шардирование** | **Партиционирование**: `created_at` (по месяцам)<br>**Шардирование**: `user_id` |
+| `VIDEO` | **Шардирование** | `video_id` |
 | `VIDEO_COUNTERS` | **Шардирование** | `video_id` - тот же шард, что и `VIDEO` |
-| `USER_SESSION` | **Шардирование** | `user_id` - тот же шард, что и `USER` |
-| `COMMENT` | **Партиционирование + Шардирование** | **Партиционирование**: `created_at` (по месяцам)<br>**Шардирование**: `video_id` - тот же шард, что и `VIDEO` |
+| `USER_SESSION` | - | - |
+| `COMMENT` | **Шардирование** | `video_id` - тот же шард, что и `VIDEO` |
 | `COMMENT_COUNTERS` | **Шардирование** | `comment_id` - тот же шард, что и `COMMENT` |
-| `VIDEO_REACTION` | **Партиционирование + Шардирование** | **Партиционирование**: `created_at` (по месяцам)<br>**Шардирование**: `video_id` - тот же шард, что и `VIDEO` |
-| `COMMENT_REACTION` | **Партиционирование + Шардирование** | **Партиционирование**: `created_at` (по месяцам)<br>**Шардирование**: `comment_id` - тот же шард, что и `COMMENT` |
+| `VIDEO_REACTION` | **Шардирование** | `video_id` - тот же шард, что и `VIDEO` |
+| `COMMENT_REACTION` | **Шардирование** | `comment_id` - тот же шард, что и `COMMENT` |
 | `SUBSCRIPTION` | **Шардирование** | `channel_id` |
 | `FAVOURITE` | **Шардирование** | `user_id` |
-| `EVENT` | **Партиционирование + Шардирование** | **Партиционирование**: `timestamp` (по часам)<br>**Шардирование**: `video_id` - шард видео |
+| `EVENT` | **Шардирование** | `video_id` - шард видео |
 | `EMBEDDING_META` | **Шардирование** | `embedding_id` |
 
 
@@ -677,7 +683,7 @@ $$\text{RPS}_{\text{avg}} = \frac{\text{RPD}}{86400 \text{ (секунд в дн
 ## 9. Схема проекта
 
 
-<img width="1235" height="876" alt="image" src="https://github.com/user-attachments/assets/3269e142-e150-4fa6-aa5e-21355e803f55" />
+<img width="1019" height="845" alt="image" src="https://github.com/user-attachments/assets/9b832ce8-d096-4b79-aca7-eed57ecb9ecb" />
 
 
 ## 10. Обеспечение надежности
