@@ -513,7 +513,7 @@ $$\text{RPS}_{\text{avg}} = \frac{\text{RPD}}{86400 \text{ (секунд в дн
 | **Уникальность подписки** | `SUBSCRIPTION` | `subscriber_id, channel_id (UNIQUE)` | 32 | $218.636 \times 10^{9}$ | **6.36 TB** |
 | **Найти все подписки пользователя** | `SUBSCRIPTION` | `subscriber_id, created_at DESC` | 24 | $218.636 \times 10^{9}$ | **4.77 TB** |
 | **Найти всех подписчиков пользователя** | `SUBSCRIPTION` | `channel_id, created_at DESC` | 24 | $218.636 \times 10^{9}$ | **4.77 TB** |
-| **Поиск по PK избранного** | `FAVOURITE` | `user_id, video_id` | 16 | $1.224 \times 10^{12}$ | **17.815 TB** |
+| **Поиск по PK избранного** | `FAVOURITE` | `favourite_id` | 16 | $1.224 \times 10^{12}$ | **17.815 TB** |
 | **Уникальность избранного** | `FAVOURITE` | `user_id, video_id` | 32 | $1.224 \times 10^{12}$ | **35.63 TB** |
 | **Найти все избранные ролики пользователя** | `FAVOURITE` | `user_id, added_at DESC` | 24 | $1.224 \times 10^{12}$ | **26.72 TB** |
 | **Поиск по PK сессии** | `USER_SESSION` | `session_id` | 16 | $1.582 \times 10^{9}$ | **23.57 GB** |
